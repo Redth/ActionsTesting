@@ -2,6 +2,14 @@
 
 name: CI
 
+env:
+  DotNetVersion: 6.0.100-preview.2.21155.3
+  AndroidMsi: https://dl.internalx.com/vsts-devdiv/Xamarin.Android/public/net6/4534967/main/f4d8fe238b15eadfc7842749bf13e5fca3e2f2d2/Microsoft.NET.Workload.Android.11.0.200.148.msi
+  AndroidPkg: https://dl.internalx.com/vsts-devdiv/Xamarin.Android/public/net6/4534967/main/f4d8fe238b15eadfc7842749bf13e5fca3e2f2d2/Microsoft.NET.Workload.Android-11.0.200-ci.f4d8fe238b15eadfc7842749bf13e5fca3e2f2d2.148.pkg
+  iOSMsi: https://bosstoragemirror.azureedge.net/wrench/main/98c8649d0c7d1e3c4c8d8d09e022befa853fb1e7/4541181/package/Microsoft.NET.Workload.iOS.14.4.100-ci.main.1192.msi
+  iOSPkg: https://bosstoragemirror.azureedge.net/wrench/main/98c8649d0c7d1e3c4c8d8d09e022befa853fb1e7/4541181/package/notarized/Microsoft.iOS.Bundle.14.4.100-ci.main.1192.pkg
+  MacCatalystPkg: https://bosstoragemirror.azureedge.net/wrench/main/98c8649d0c7d1e3c4c8d8d09e022befa853fb1e7/4541181/package/notarized/Microsoft.MacCatalyst.Bundle.14.3.100-ci.main.337.pkg
+
 # Controls when the action will run. 
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
@@ -32,12 +40,13 @@ jobs:
         run: |
           $ProgressPreference = 'SilentlyContinue'
           Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile dotnet-install.ps1
-          & .\dotnet-install.ps1 -Version 6.0.100-preview.2.21155.3 -InstallDir "$env:ProgramFiles\dotnet\" -Verbose
+          & .\dotnet-install.ps1 -Version $env:DotNetVersion -InstallDir "$env:ProgramFiles\dotnet\" -Verbose
           & dotnet --list-sdks
           
-          & dotnet tool install --global redth.net.maui.check --version 0.1.3 --add-source "https://api.nuget.org/v3/index.json"
-          & maui-check --fix --non-interactive
-
+          & dotnet tool install --global boots
+          & boots $env:AndroidMsi
+          & boots $env:iOSMsi
+          
       # Runs a single command using the runners shell
       - name: Run a one-line script
         run: echo Hello, world!
@@ -59,5 +68,7 @@ jobs:
       - name: Install Mobile
         shell: pwsh
         run: |
-          & dotnet tool install --global redth.net.maui.check --version 0.1.3 --add-source "https://api.nuget.org/v3/index.json"
-          & maui-check --fix --non-interactive
+           & dotnet tool install --global boots
+           & boots $env:AndroidPkg
+           & boots $env:iOSPkg
+           & boots $env:MacCatalystPkg
