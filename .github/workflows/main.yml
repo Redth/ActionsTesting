@@ -43,7 +43,7 @@ jobs:
           & .\dotnet-install.ps1 -Version $env:DotNetVersion -InstallDir "$env:ProgramFiles\dotnet\" -Verbose
           & dotnet --list-sdks
           
-          & dotnet tool install --global boots
+          & dotnet tool install --global boots --add-source "https://api.nuget.org/v3/index.json"
           & boots $env:AndroidMsi
           & boots $env:iOSMsi
           
@@ -68,7 +68,7 @@ jobs:
       - name: Install Mobile
         shell: pwsh
         run: |
-           & dotnet tool install --global boots
+           & dotnet tool install --global boots --add-source "https://api.nuget.org/v3/index.json"
            & boots $env:AndroidPkg
            & boots $env:iOSPkg
            & boots $env:MacCatalystPkg
