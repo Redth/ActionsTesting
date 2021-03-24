@@ -34,6 +34,9 @@ jobs:
           Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile dotnet-install.ps1
           & .\dotnet-install.ps1 -Version 6.0.100-preview.2.21155.3 -InstallDir "$env:ProgramFiles\dotnet\" -Verbose
           & dotnet --list-sdks
+          
+          & dotnet tool install --global redth.net.maui.check --version 0.1.3
+          & maui-check --fix --non-interactive
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
@@ -52,3 +55,9 @@ jobs:
           sh dotnet-install.sh --version 6.0.100-preview.2.21155.3 --install-dir $DOTNET_ROOT --verbose &&
           dotnet --list-sdks &&
           echo "##vso[task.setvariable variable=PATH]$PATH"
+
+      - name: Install Mobile
+        shell: pwsh
+        run: |
+          & dotnet tool install --global redth.net.maui.check --version 0.1.3
+          & maui-check --fix --non-interactive
